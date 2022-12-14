@@ -46,13 +46,14 @@ if ($_SESSION['adminauth']) {
                             <?php
                             $examinationid = $_GET['examinationid'];
                             $past = new Examination;
-                            $key = "village";
                             $ex = $past->query("SELECT examinations.*, class.name AS classname, subjects.subjectname AS 
                     subjectname FROM examinations JOIN class ON class.classid = examinations.classid JOIN subjects 
                     ON subjects.subjectid = examinations.subjectid WHERE examinationid='$examinationid'");
                             $exams = $past->data($ex);
                             $examname = $exams['subjectname'] . ' for ' . $exams['classname'];
                             // $past_question = 
+                            $key = $past->blowfishDecryption($exams['blowfish']);
+
                             ?>
                             <div id="printpastquestion">
                                 <h1 class="text-cente text-uppercase font-weight-bold mt-2 mb-2">Examination Details</h1>

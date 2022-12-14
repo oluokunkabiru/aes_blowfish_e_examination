@@ -374,8 +374,10 @@ if (count($error) > 0) {
      $startdate = $exam->test_input(date_format(date_create($_POST['startdate']), "Y-m-d").date(" H:s:i"));
      $enddate= $exam->test_input(date_format(date_create($_POST['enddate']), "Y-m-d")." 23:59:59");
      $exampasscode= $exam->test_input($_POST['exampasscode']);
+     $blowfish = $exam->blowfishEncryption($exampasscode);
+
      $visibility= $exam->test_input($_POST['visibility']);
-     $q = $exam->query("UPDATE examinations SET subjectid ='$subject', display='$display', classid='$classname', description='$examinationdescription', 
+     $q = $exam->query("UPDATE examinations SET subjectid ='$subject',blowfish='$blowfish', display='$display', classid='$classname', description='$examinationdescription', 
      examname='$examname', duration='$duration', startdate ='$startdate', enddate='$enddate',
       examinationpin='$exampasscode', visibility='$visibility'WHERE examinationid ='$id'");
      if($q){

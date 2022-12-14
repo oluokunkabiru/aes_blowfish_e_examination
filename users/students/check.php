@@ -28,6 +28,10 @@ if(isset($_POST['requestexampinexaminationid'])){
 
         $examid = $_POST['requestexampinexaminationid'];
         $pinno = $pin->test_input($_POST['pin']);
+        $pinno = $pin->blowfishDecryption($pinno); 
+
+        // $pin = $exams['rsa_private'];
+
         $q = $pin->query("SELECT* FROM examinations WHERE examinationid ='$examid' AND examinationpin='$pinno' ");
        $d = $pin->data($q);
 
@@ -118,7 +122,7 @@ if(isset($_POST['requestexampinexaminationid'])){
             }
 
         }else{
-            echo "Incorect pin, Please try again or ask your teacher";
+            echo "Invalid Blowfish Key, kindly request for new public key from admin";
         }
     }
 }

@@ -31,6 +31,15 @@ if ($_SESSION['adminauth']) {
 subjectname FROM examinations JOIN class ON class.classid = examinations.classid JOIN subjects 
 ON subjects.subjectid = examinations.subjectid WHERE examinationid = '$id'  ");
                         $exams = $exam->data($q);
+                        // $pin = $exams['blowfish'];
+
+                        // $pinss = base64_decode($pin);  //$exam->rsaPublic($pin);
+                        // print_r(($pinss));
+                        // exit();
+                        $pinss =  $exams['examinationpin'];
+                        // echo $pinss;
+                        $key =  $exam->blowfishDecryption($exams['blowfish']);
+                        // echo $key;
                         if (isset($_GET['examinationid']) && isset($_GET['view'])) {
 
 
@@ -66,15 +75,15 @@ ON subjects.subjectid = examinations.subjectid WHERE examinationid = '$id'  ");
                                         ?>
                                             <tr>
                                             <td scope="row"><?php echo $i++ ?></td>
-                                            <td><?php echo html_entity_decode($data['question']) ?></td>
-                                            <td><span class="text-center"><?php echo html_entity_decode($data['option_a'])?></span></td>
-                                            <td><span class="text-center"><?php echo html_entity_decode($data['option_b'])?></span></td>
-                                            <td><span class="text-center"><?php echo html_entity_decode($data['option_c'])?></span></td>
-                                            <td><span class="text-center"><?php echo html_entity_decode($data['option_d'])?></span></td>
-                                            <td><span class="text-center"><?php echo html_entity_decode($data['option_e'])?></span></td>
-                                            <td><span class="text-uppercase"><?php echo html_entity_decode($data['correct'])?></span></td>
+                                            <td><?php echo html_entity_decode($exam->DecyptAES($data['question'], $key)) ?></td>
+                                            <td><span class="text-center"><?php echo html_entity_decode($exam->DecyptAES($data['option_a'], $key))?></span></td>
+                                            <td><span class="text-center"><?php echo html_entity_decode($exam->DecyptAES($data['option_b'], $key))?></span></td>
+                                            <td><span class="text-center"><?php echo html_entity_decode($exam->DecyptAES($data['option_c'], $key))?></span></td>
+                                            <td><span class="text-center"><?php echo html_entity_decode($exam->DecyptAES($data['option_d'], $key))?></span></td>
+                                            <td><span class="text-center"><?php echo html_entity_decode($exam->DecyptAES($data['option_e'], $key))?></span></td>
+                                            <td><span class="text-uppercase"><?php echo html_entity_decode($exam->DecyptAES($data['correct'], $key))?></span></td>
 
-                                            <td><?php echo html_entity_decode($data['mark']) ?></td>
+                                            <td><?php echo html_entity_decode($exam->DecyptAES($data['mark'], $key)) ?></td>
                                             <!-- <td><?php //echo html_entity_decode($data['duration']) ?></td> -->
                                             <td>
                                             <a href="examinationquestions.php?examinationid=<?php echo $id ?>&&editquestions=<?php echo $data['questionid'] ?>" class ="btn btn-success"><span class="fa fa-edit p-2"></span></a>
@@ -213,7 +222,8 @@ ON subjects.subjectid = examinations.subjectid WHERE examinationid = '$id'  ");
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-sm-4">
-                                                            <input type="hidden" name="examid" value="<?php echo $id ?>">
+                                                        <input type="hidden" name="examid" value="<?php echo $id ?>">
+                                                        <input type="hidden" name="exampin" value="<?php echo $pinss ?>">
                                                         </div>
                                                         <div class="col-sm-8">
                                                     <button id="newquestionbtn" type="submit" class="btn btn-primary btn-block btn-lg text-uppercase">Create new question</button>
@@ -245,7 +255,8 @@ ON subjects.subjectid = examinations.subjectid WHERE examinationid = '$id'  ");
                                                         <input type="file" class="form-control" name="excelfile">
                                                     </div>
                                                     <div class="col-sm-4">
-                                                        <input type="hidden" name="examid" value="<?php echo $id ?>">
+                                                    <input type="hidden" name="examid" value="<?php echo $id ?>">
+                                                    <input type="hidden" name="exampin" value="<?php echo $pinss ?>">
                                                     </div>
 
                                                     <button id="filequestionbtn" type="submit" class="btn btn-primary btn-block btn-lg text-uppercase">add question</button>
@@ -307,18 +318,20 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                                 <label for="options" class="col-sm-4 col-form-label">Question</label>
                                 <div class="col-sm-8">
                                 <textarea class="textarea" name="question" placeholder="Place some text here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                            <?php echo $question['question']?html_entity_decode($question['question']):"" ?>
+                            <?php echo $question['question']?html_entity_decode($exam->DecyptAES($question['question'], $key)):"" ?>
                             </textarea>
                                 </div>
+
                             </div>
                                 <input type="hidden" name="editquestionsid" value="<?php echo $_GET['editquestions'] ?>">
-                            <div class="row">
+                                <input type="hidden" name="exampin" value="<?= $pinss ?>">
+                                <div class="row">
                                 <div class="col">
                                     <div class="form-group row">
                                 <label for="options" class="col-sm-4 col-form-label">Option A</label>
                                 <div class="col-sm-8">
                                 <textarea class="textarea"  name="optiona" placeholder="Option A" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                                <?php if(!empty($question['option_a'])){ echo html_entity_decode($question['option_a']); }?>
+                                <?php if(!empty($question['option_a'])){ echo html_entity_decode($exam->DecyptAES($question['option_a'], $key)); }?>
 
                             </textarea>
                                 </div>
@@ -329,7 +342,7 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                                 <label for="options" class="col-sm-4 col-form-label">Option B</label>
                                 <div class="col-sm-8">
                                 <textarea class="textarea"  name="optionb" placeholder="Option B" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                                <?php if(!empty($question['option_b'])){ echo html_entity_decode($question['option_b']); }?>
+                                <?php if(!empty($question['option_b'])){ echo html_entity_decode($exam->DecyptAES($question['option_b'], $key)); }?>
 
                             </textarea>
                                 </div>
@@ -343,7 +356,7 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                                 <label for="options" class="col-sm-4 col-form-label">Option C</label>
                                 <div class="col-sm-8">
                                 <textarea class="textarea" placeholder="Option C" name="optionc" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                                <?php if(!empty($question['option_c'])){ echo html_entity_decode($question['option_c']); }?>
+                                <?php if(!empty($question['option_c'])){ echo html_entity_decode($exam->DecyptAES($question['option_c'], $key)); }?>
 
                             </textarea>
                                 </div>
@@ -355,7 +368,7 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                                 <label for="options" class="col-sm-4 col-form-label">Option D</label>
                                 <div class="col-sm-8">
                                 <textarea class="textarea" placeholder="Option D" name="optiond" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                                <?php if(!empty($question['option_d'])){ echo html_entity_decode($question['option_d']); }?>
+                                <?php if(!empty($question['option_d'])){ echo html_entity_decode($exam->DecyptAES($question['option_d'], $key)); }?>
 
                             </textarea>
                                 </div>
@@ -369,7 +382,7 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                                 <label for="options" class="col-sm-4 col-form-label">Option E</label>
                                 <div class="col-sm-8">
                                 <textarea class="textarea" placeholder="Option E" name="optione" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;">
-                                <?php if( !empty($question['option_e'])){ echo html_entity_decode($question['option_e']); }?>
+                                <?php if( !empty($question['option_e'])){ echo html_entity_decode($exam->DecyptAES($question['option_e'], $key)); }?>
 
                             </textarea>
                                 </div>
@@ -379,14 +392,14 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                                      <div class="form-group row">
                                 <label for="" class="col-sm-4 col-form-label">Mark</label>
                                 <div class="col-sm-8">
-                                    <input type="number" class="form-control" value="<?php echo $question['mark'] ?>" name="mark" placeholder="Assign mark">
+                                    <input type="number" class="form-control" value="<?php echo $exam->DecyptAES($question['mark'] , $key)?>" name="mark" placeholder="Assign mark">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="inputEmail3" class="col-sm-4 col-form-label">Correct Answer </label>
                                 <div class="col-sm-8">
                                     <select class="custom-select" name="correct">
-                                    <option value="<?php echo $question['correct'] ?>" selected class="text-uppercase"><?php echo html_entity_decode($question['correct']) ?></option>
+                                    <option value="<?php echo $question['correct'] ?>" selected class="text-uppercase"><?php echo html_entity_decode($exam->DecyptAES($question['correct'], $key)) ?></option>
 
                                     <option value="A">A</option>
                                         <option value="B">B</option>
@@ -399,6 +412,8 @@ if (isset($_GET['examinationid']) && isset($_GET['editquestions'])) {
                             <div class="row">
                                 <div class="col-sm-4">
                                     <input type="hidden" name="examid" value="<?php echo $id ?>">
+                                    <input type="hidden" name="exampin" value="<?php echo $pinss ?>">
+
                                 </div>
                                 <div class="col-sm-8">
                             <button id="newquestionbtn" type="submit" class="btn btn-primary btn-block btn-lg text-uppercase">update question</button>

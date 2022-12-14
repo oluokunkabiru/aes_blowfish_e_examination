@@ -161,7 +161,9 @@ public function makeAES($msg, $key)
     //    return redirect()->back()->with('encrypted', $output);
 
 }
-
+public function blowfishEncryption($key){
+    return base64_encode(base64_encode($key));
+}
 
 
 public function DecyptAES($msg, $key)
@@ -173,8 +175,12 @@ public function DecyptAES($msg, $key)
 }
 
 
-public function rsaPrivate($key){
-    return base64_encode($key);
+public function blowfishDecrypt($key){
+    return base64_decode(base64_decode($key));
+}
+
+public function blowfishDecryption($key){
+    return $this->blowfishDecrypt($key);
 }
 
    

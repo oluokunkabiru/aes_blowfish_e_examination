@@ -71,12 +71,13 @@ if (count($error) > 0) {
      $startdate = $exam->test_input(date_format(date_create($_POST['startdate']), "Y-m-d").date(" H:s:i"));
      $enddate= $exam->test_input(date_format(date_create($_POST['enddate']), "Y-m-d")." 23:59:59");
      $exampasscode= $exam->test_input($_POST['exampasscode']);
+     $blowfish = $exam->blowfishEncryption($exampasscode);
      $visibility= $exam->test_input($_POST['visibility']);
      $id = $exam->tableid($table);
      $currentTerm = $exam->currentTerm();
      $status ="unavailable";
-     $q = $exam->query("INSERT INTO examinations(display, current_term, status,subjectid, classid, description, examname, duration, startdate, enddate, examinationpin, visibility, examinationid)
-     VALUES('$display', '$currentTerm','$status','$subject', '$classname', '$examinationdescription', '$examname', '$duration', '$startdate', '$enddate',
+     $q = $exam->query("INSERT INTO examinations(display,blowfish, current_term, status,subjectid, classid, description, examname, duration, startdate, enddate, examinationpin, visibility, examinationid)
+     VALUES('$display','$blowfish', '$currentTerm','$status','$subject', '$classname', '$examinationdescription', '$examname', '$duration', '$startdate', '$enddate',
      '$exampasscode', '$visibility', '$id' )");
      
      if($q){

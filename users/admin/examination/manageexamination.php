@@ -79,7 +79,7 @@ if ($_SESSION['adminauth']) {
                       <td><?php echo date_format(date_create($data['startdate']), "d/m/Y h:s:ia") . " <strong>To</strong> " . date_format(date_create($data['enddate']), "d/m/Y h:s:ia") ?></td>
                       <td><?php echo $data['duration'] ?></td>
                       <td><?php echo $data['examinationpin'] ?></td>
-                      <td><?php echo $data['examinationpin'] ?></td>
+                      <td><?php echo $data['blowfish'] ?></td>
                       <td><?php echo ucwords($data['visibility']) ?></td>
 
 

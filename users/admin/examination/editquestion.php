@@ -47,16 +47,19 @@ echo json_encode($errors);
 if(count($error)==0){
  
 
-    $questions  = $question->setQuestion($_POST['question']);
-    $optiona = $question->setQuestion($_POST['optiona']);
-    $optionb = $question->setQuestion($_POST['optionb']);
-    $optionc =$_POST['optionc']?$question->setQuestion($_POST['optionc']):"";
-    $optiond = $_POST['optiond']?$question->setQuestion($_POST['optiond']):"";
-    $optione = $_POST['optione']?$question->setQuestion($_POST['optione']):"";
-    $qtype = $question->test_input($_POST['qtype']);
-    $correctanswer = $question->test_input($_POST['correct']);
-    $mark = $question->test_input($_POST['mark']);
+    $key = $_POST['exampin'];
+
+    $questions  = $question->AESEncrypt($question->setQuestion($_POST['question']), $key);
+    $optiona = $question->AESEncrypt($question->setQuestion($_POST['optiona']), $key);
+    $optionb = $question->AESEncrypt($question->setQuestion($_POST['optionb']), $key);
+    $optionc =$_POST['optionc']?$question->AESEncrypt($question->setQuestion($_POST['optionc']), $key):"";
+    $optiond = $_POST['optiond']?$question->AESEncrypt($question->setQuestion($_POST['optiond']), $key):"";
+    $optione = $_POST['optione']?$question->AESEncrypt($question->setQuestion($_POST['optione']), $key):"";
+    $qtype = "normal";
+    $correctanswer = $question->AESEncrypt($question->test_input($_POST['correct']), $key);
+    $mark = $question->AESEncrypt($question->test_input($_POST['mark']), $key);
     $examid = $_POST['examid'];
+   
     $id = $_POST['editquestionsid'];
   
     // echo "<br>$questions<br>$optiona<br>$optionb<br>$optionc<br>$optiond<br>$correctanswer";

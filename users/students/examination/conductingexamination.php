@@ -30,6 +30,14 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
     $camst = $tim->query("SELECT* FROM examinations WHERE examinationid='$examid' ");
     $cam = $tim->data($camst);
     $camerastatus = $cam['camera_status'];
+    // $decryptionKey = $cam['rsa_public'];
+
+    // $decryptionKey = $tim->rsaPublic($decryptionKey); 
+
+        // $pin = $exams['rsa_private'];
+
+        $decryptionKey= $tim->blowfishDecryption($cam['blowfish']); 
+    
 
     $tims = $tim->query("SELECT* FROM studentstartexamination WHERE studentid='$studenid' AND examinationid='$examid'");
     $time = $tim->data($tims);
@@ -531,7 +539,7 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
                                     ?>
                                         <div class="card card-dark card-outline p-4">
                                             <div class="card-header">
-                                                <p><?php echo html_entity_decode($data['question']) ?></p>
+                                                <p><?php echo html_entity_decode($exam->DecyptAES($data['question'], $decryptionKey)) ?></p>
                                             </div>
                                         </div>
                                         <div class="card card-primary card-outline">
@@ -545,7 +553,7 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             }
                                                                                                                                                             ?>>
-                                                            <label class="custom-control-label" for="optiona"> A. <span class="ml-2 text-secondary"><?php echo html_entity_decode($data['option_a']) ?></span> </label>
+                                                            <label class="custom-control-label" for="optiona"> A. <span class="ml-2 text-secondary"><?php echo html_entity_decode($exam->DecyptAES($data['option_a'], $decryptionKey)) ?></span> </label>
                                                         </div>
                                                     <?php
                                                     }
@@ -558,7 +566,7 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             }
                                                                                                                                                             ?>>
-                                                            <label class="custom-control-label" for="optionb"> B. <span class="ml-2 text-secondary"><?php echo html_entity_decode($data['option_b']) ?></span></label>
+                                                            <label class="custom-control-label" for="optionb"> B. <span class="ml-2 text-secondary"><?php echo html_entity_decode($exam->DecyptAES($data['option_b'], $decryptionKey)) ?></span></label>
                                                         </div>
                                                     <?php
                                                     }
@@ -571,7 +579,7 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             }
                                                                                                                                                             ?>>
-                                                            <label class="custom-control-label" for="optionc"> C. <span class="ml-2 text-secondary"><?php echo html_entity_decode($data['option_c']) ?></span></label>
+                                                            <label class="custom-control-label" for="optionc"> C. <span class="ml-2 text-secondary"><?php echo html_entity_decode($exam->DecyptAES($data['option_c'], $decryptionKey)) ?></span></label>
                                                         </div>
                                                     <?php
                                                     }
@@ -584,7 +592,7 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             }
                                                                                                                                                             ?>>
-                                                            <label class="custom-control-label" for="optiond"> D. <span class="ml-2 text-secondary"><?php echo html_entity_decode($data['option_d']) ?></span></label>
+                                                            <label class="custom-control-label" for="optiond"> D. <span class="ml-2 text-secondary"><?php echo html_entity_decode($exam->DecyptAES($data['option_d'], $decryptionKey)) ?></span></label>
                                                         </div>
                                                     <?php
                                                     }
@@ -597,7 +605,7 @@ if ($_SESSION['studentauth'] && $_SESSION['examinationgoingon']) {
                                                                                                                                                                 echo "checked";
                                                                                                                                                             }
                                                                                                                                                             ?>>
-                                                            <label class="custom-control-label" for="optione"> E. <span class="ml-2 text-secondary"><?php echo html_entity_decode($data['option_e']) ?></span></label>
+                                                            <label class="custom-control-label" for="optione"> E. <span class="ml-2 text-secondary"><?php echo html_entity_decode($exam->DecyptAES($data['option_e'], $decryptionKey)) ?></span></label>
                                                         </div>
                                                     <?php
                                                     }

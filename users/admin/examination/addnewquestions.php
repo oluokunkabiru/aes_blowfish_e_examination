@@ -44,18 +44,20 @@ if(count($error) > 0){
 
 // print_r($question->setQuestion($_POST['question']));
 if(count($error)==0){
-    $key = "village";
+    $key = $_POST['exampin'];
+
     $questions  = $question->AESEncrypt($question->setQuestion($_POST['question']), $key);
-    $optiona = $question->setQuestion($_POST['optiona']);
-    $optionb = $question->setQuestion($_POST['optionb']);
-    $optionc =$_POST['optionc']?$question->setQuestion($_POST['optionc']):"";
-    $optiond = $_POST['optiond']?$question->setQuestion($_POST['optiond']):"";
-    $optione = $_POST['optione']?$question->setQuestion($_POST['optione']):"";
+    $optiona = $question->AESEncrypt($question->setQuestion($_POST['optiona']), $key);
+    $optionb = $question->AESEncrypt($question->setQuestion($_POST['optionb']), $key);
+    $optionc =$_POST['optionc']?$question->AESEncrypt($question->setQuestion($_POST['optionc']), $key):"";
+    $optiond = $_POST['optiond']?$question->AESEncrypt($question->setQuestion($_POST['optiond']), $key):"";
+    $optione = $_POST['optione']?$question->AESEncrypt($question->setQuestion($_POST['optione']), $key):"";
     $qtype = "normal";
-    $correctanswer = $question->test_input($_POST['correct']);
-    $mark = $question->test_input($_POST['mark']);
+    $correctanswer = $question->AESEncrypt($question->test_input($_POST['correct']), $key);
+    $mark = $question->AESEncrypt($question->test_input($_POST['mark']), $key);
     $examid = $_POST['examid'];
     $id = $question->tableid($table);
+
     $q = $question->query("INSERT INTO questions(examinationid, questiontype, question, option_a, option_b, option_c, option_d, option_e, correct,  mark, questionid)
     VALUES('$examid', '$qtype', '$questions', '$optiona','$optionb','$optionc','$optiond','$optione','$correctanswer', '$mark','$id' )");
    
